@@ -14,7 +14,7 @@
 	
 struct cacheline_separate {
 	unsigned int x;	
-	unsigned char pad[4096];
+	unsigned char pad[64];
 	unsigned int y;
 }__attribute__((aligned(64))); 
 	
@@ -41,7 +41,7 @@ static inline uint64_t rdtsc(void)
 static inline void flush_cacheline(volatile void *ptr1)
 {
 	//asm volatile("clflush %0" : :"m"(*((volatile uint8_t *)ptr1)));
-	asm volatile("clflush %0": "+m"(*((volatile uint8_t *)ptr1))); ////this is the right usage and should take more time
+	asm volatile("clflush %0": "+m"(*((volatile uint8_t *)ptr1))); 
 }
 
 /*
@@ -55,14 +55,10 @@ static inline void flush_cacheline(volatile void *ptr1)
 static void access_memory(int opt)
 {
 	volatile uint32_t *x, *y;
-	volatile uint32_t *t1, *t2;
 	uint64_t count = 0x10000;
 	int val;
 	uint64_t time1, time2;	
 
-	t1 = malloc(100);
-	t2 = t1;	
-		
 	if (opt == 1) {
 		x = &c_same.x;
 		y = &c_same.y;
